@@ -76,9 +76,43 @@ runcmd(struct cmd *cmd)
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
       exit(1);
+    if(ecmd->argv[0] && strcmp(ecmd->argv[0] , "!") == 0) {
+      int lenght = 0;
+      for (int i = 1; ecmd->argv[i] != 0; i++) {
+        lenght += strlen(ecmd->argv[i]) + 1;
+      }
+      if(lenght > 512){
+        printf("Message too long\n");
+        exit(0);
+      }
+      for (int i = 1; ecmd->argv[i] != 0; i++) {
+        char *str = ecmd->argv[i];
+        for (int j = 0; str[j] != '\0'; j++) {
+          if ((str[j] == 'o' && str[j+1] == 's')
+          ||  (str[j] == 'O' && str[j+1] == 's')
+          ||  (str[j] == 'o' && str[j+1] == 'S')
+          ||  (str[j] == 'O' && str[j+1] == 'S')){
+              printf("\033[34m");
+              write(2 , &str[j] , 2);
+              printf("\033[0m");
+              j++;
+              
+          } else {
+              write(2 , &str[j] , 1);
+          }
+        }
+        printf(" ");
+      }
+      printf("\n");
+  
+      exit(0);
+    }
     exec(ecmd->argv[0], ecmd->argv);
     fprintf(2, "exec %s failed\n", ecmd->argv[0]);
+
+    
     break;
+
 
   case REDIR:
     rcmd = (struct redircmd*)cmd;
