@@ -3,6 +3,7 @@
 #include "memlayout.h"
 #include "riscv.h"
 #include "defs.h"
+#include "custom_logger.h"
 
 volatile static int started = 0;
 
@@ -34,12 +35,21 @@ main()
   } else {
     while(started == 0)
       ;
+
+    
     __sync_synchronize();
     printf("hart %d starting\n", cpuid());
     kvminithart();    // turn on paging
     trapinithart();   // install kernel trap vector
     plicinithart();   // ask PLIC for device interrupts
+
+    if (cpuid() == 1) {
+      log_message(LOG_INFO , "Welcome to AUT MCS Principles of Operating Systems Course."
+        "This message is from a custom logger implemented by 40213431 and 40213427 \n");
+      log_message(LOG_WARN , "This is a test warning message for the custom logger");
+      log_message(LOG_ERROR , "This is a test error message for the custom logger");
+    }
   }
 
-  scheduler();        
+  scheduler();       
 }
