@@ -91,3 +91,9 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+void
+sys_trigger(void)
+{
+  trigger();
+}
